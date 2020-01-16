@@ -9,3 +9,4 @@ import Exercises.Chapter4 as Export
 import Exercises.Chapter5 as Export
 import Exercises.Chapter6 as Export
 import Exercises.Chapter7 as Export
+import Exercises.Chapter8 as Export
