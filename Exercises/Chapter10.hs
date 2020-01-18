@@ -8,7 +8,7 @@
 
 module Exercises.Chapter10 where
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 
 newtype Fst a b = Fst (a, b)
 
@@ -71,3 +71,77 @@ data Foldr :: (a -> b -> Exp b) -> b -> [a] -> Exp b
 type instance Eval_ (Foldr _ z '[]) = z
 type instance Eval_ (Foldr f z (a ': as)) =
   Eval_ (f a (Eval_ (Foldr f z as)))
+
+data Pure :: a -> Exp a
+type instance Eval_ (Pure a) = a
+
+data (=<<)
+  :: (a -> Exp b)
+  -> Exp a
+  -> Exp b
+type instance Eval_ (k =<< e) =
+  Eval_ (k (Eval_ e))
+infixr 0 =<<
+
+data (<=<)
+  :: (b -> Exp c)
+  -> (a -> Exp b)
+  -> a -> Exp c
+type instance Eval_ ((f <=< g) x) =
+  Eval_ (f (Eval_ (g x)))
+infixr 1 <=<
+
+data TyEq :: a -> b -> Exp Bool
+type instance Eval_ (TyEq a b) = TyEqImpl a b
+type family TyEqImpl (a :: k) (b :: k) :: Bool where
+  TyEqImpl a a = 'True
+  TyEqImpl _ _ = 'False
+
+data Collapse :: [Constraint] -> Exp Constraint
+type instance Eval_ (Collapse '[]) = (() :: Constraint)
+type instance Eval_ (Collapse (a ': as)) =
+  (a, Eval_ (Collapse as))
+
+data Pure1 :: (a -> b) -> a -> Exp b
+type instance Eval_ (Pure1 f x) = f x
+
+type All_ (c :: k -> Constraint) (ts :: [k]) =
+  Collapse =<< MapList_ (Pure1 c) ts
+
+data Map :: (a -> Exp b) -> f a -> Exp (f b)
+
+type instance Eval_ (Map f '[]) = '[]
+type instance Eval_ (Map f (a ': as)) =
+  Eval_ (f a) ': Eval_ (Map f as)
+
+type instance Eval_ (Map f 'Nothing)  = 'Nothing
+type instance Eval_ (Map f ('Just a)) = 'Just (Eval_ (f a))
+
+type instance Eval_ (Map f ('Left e))  = 'Left e
+type instance Eval_ (Map f ('Right a)) = 'Right (Eval_ (f a))
+
+{- Exercise 10.4-i
+
+   Write a promoted functor instance for tuples.
+-}
+
+type instance Eval_ (Map f '(a, b)) = '(a, Eval_ (f b))
+
+type family ((a :: [k]) :++ (b :: [k])) :: [k] where
+  '[] :++ xs = xs
+  (a ': as) :++ xs = a ': (as :++ xs)
+
+data Mappend :: a -> a -> Exp a
+type instance Eval_
+  (Mappend '() '()) = '()
+type instance Eval_
+  (Mappend (a :: Constraint)
+           (b :: Constraint)) = (a, b)
+type instance Eval_
+  (Mappend (a :: [k])
+           (b :: [k])) = a :++ b
+
+data Mempty :: k -> Exp k
+type instance Eval_ (Mempty '()) = '()
+type instance Eval_ (Mempty (c :: Constraint)) = (() :: Constraint)
+type instance Eval_ (Mempty (_ :: [k])) = '[]
