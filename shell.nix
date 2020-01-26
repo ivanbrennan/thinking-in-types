@@ -4,7 +4,11 @@ with pkgs;
 
 mkShell {
   buildInputs = [
-    (haskellPackages.ghcWithPackages (ps: [ps.pretty-simple]))
+    (haskellPackages.ghcWithPackages (ps: [
+      ps.pretty-simple
+      ps.first-class-families
+      ps.vector
+    ]))
     haskellPackages.ghcid
     hlint
   ];
