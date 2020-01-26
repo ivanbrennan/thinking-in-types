@@ -7,6 +7,7 @@ mkShell {
     (haskellPackages.ghcWithPackages (ps: [
       ps.pretty-simple
       ps.first-class-families
+      ps.vector
     ]))
     haskellPackages.ghcid
     hlint
