@@ -74,7 +74,7 @@ answer_1_2_i =
    and one of:
      (Either b c -> a) -> (b -> a, c -> a)
 
-  Algegra:
+  Algebra:
     (a ^ b) × (a ^ c) = a ^ (b + c)
 
   Types:
@@ -89,7 +89,7 @@ answer_1_4_i_from f = (f . Left, f . Right)
 
 {- Exercise 1.4-ii
 
-  Algegra:
+  Algebra:
     (a × b) ^ c = (a ^ c) × (b ^ c)
 
   Types:
@@ -104,7 +104,7 @@ answer_1_4_ii_from (f, g) = (,) <$> f <*> g
 
 {- Exercise 1.4-ii
 
-  Algegra:
+  Algebra:
     (a ^ b) ^ c = a ^ (b x c)
 
   Types:
