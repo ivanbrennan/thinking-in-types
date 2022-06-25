@@ -82,10 +82,17 @@ answer_1_2_i =
 -}
 
 answer_1_4_i_to :: (b -> a) -> (c -> a) -> Either b c -> a
-answer_1_4_i_to = either
+answer_1_4_i_to f1 f2 = f
+  where
+    -- This is 'Prelude.either'.
+    f (Left x) = f1 x
+    f (Right x) = f2 x
 
 answer_1_4_i_from :: (Either b c -> a) -> (b -> a, c -> a)
-answer_1_4_i_from f = (f . Left, f . Right)
+answer_1_4_i_from f = (f1, f2)
+  where
+    f1 = f . Left
+    f2 = f . Right
 
 {- Exercise 1.4-ii
 
@@ -97,10 +104,15 @@ answer_1_4_i_from f = (f . Left, f . Right)
 -}
 
 answer_1_4_ii_to :: (c -> (a, b)) -> (c -> a, c -> b)
-answer_1_4_ii_to f = (fst . f, snd . f)
+answer_1_4_ii_to f = (f1, f2)
+  where
+    f1 = fst . f
+    f2 = snd . f
 
 answer_1_4_ii_from :: (c -> a, c -> b) -> (c -> (a, b))
-answer_1_4_ii_from (f, g) = (,) <$> f <*> g
+answer_1_4_ii_from (f1, f2) = f
+  where
+    f x = (f1 x, f2 x)
 
 {- Exercise 1.4-ii
 
@@ -108,11 +120,17 @@ answer_1_4_ii_from (f, g) = (,) <$> f <*> g
     (a ^ b) ^ c = a ^ (b x c)
 
   Types:
-    (c -> (b -> a)) isomorphic ((b, c) -> a)
+    (c -> b -> a) isomorphic (b -> c -> a)
 -}
 
-answer_1_4_iii_to :: (c -> (b -> a)) -> ((b, c) -> a)
-answer_1_4_iii_to = uncurry . flip
+answer_1_4_iii_to :: (c -> b -> a) -> (b -> c -> a)
+answer_1_4_iii_to f = f'
+  where
+    -- This is 'Prelude.flip'.
+    f' x y = f y x
 
-answer_1_4_iii_from :: ((b, c) -> a) -> (c -> (b -> a))
-answer_1_4_iii_from = flip . curry
+answer_1_4_iii_from :: (b -> c -> a) -> (c -> b -> a)
+answer_1_4_iii_from f = f'
+  where
+    -- This is 'Prelude.flip'.
+    f' x y = f y x
