@@ -42,7 +42,7 @@ instance Show (HList '[]) where
   show HNil = "HNil"
 
 instance (Show t, Show (HList ts)) => Show (HList (t ': ts)) where
-  show (x :# xs) = show x <> ":#" <> show xs
+  show (x :# xs) = show x <> " :# " <> show xs
 -}
 
 type family AllEq (ts :: [Type]) :: Constraint where
@@ -70,4 +70,4 @@ instance (All Eq ts, All Ord ts) => Ord (HList ts) where
 
 instance All Show ts => Show (HList ts) where
   show HNil = "HNil"
-  show (x :# xs) = show x <> ":#" <> show xs
+  show (x :# xs) = show x <> " :# " <> show xs
